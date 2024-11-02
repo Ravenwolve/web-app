@@ -1,0 +1,43 @@
+#!/bin/bash
+
+show_usage() {
+	cat <<-EOF
+		Usage: $1 <command> <login> <password>
+
+		Commands:
+			register      register the user using given login and password into database
+			auth          authentificate the user using given login and password into database
+	EOF
+}
+
+register() {
+	local login=$1
+	local password=$2
+	curl -X POST http://localhost:8080/sign-up -H 'Content-Type: application/json' -d '{"usr":"$login","pwd":"$password"}'
+}
+
+auth() {
+	local login=$1
+	local password=$2
+	curl -X POST http://localhost:8080/auth -H 'Content-Type: application/json' -d '{"usr":"$login","pwd":"$password"}'
+}
+
+if [[ $# != 3 ]]; then
+	show_usage $0
+	exit 1
+fi
+
+cmd=$1
+login=$2
+password=$3
+case $cmd in
+register)
+	register login password
+	;;
+auth)
+	auth login password
+	;;
+*)
+	show_usage $0
+	;;
+esac

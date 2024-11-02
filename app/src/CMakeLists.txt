@@ -1,5 +1,5 @@
 find_package(wfrest REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Sql)
+find_package(Qt5 REQUIRED COMPONENTS Sql)
 find_package(jwt-cpp CONFIG REQUIRED)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -13,32 +13,40 @@ set(SRC
   application/application.cpp
   
   controller/usercontroller.cpp
+  controller/authcontroller.cpp
 
   repository/userrepository.cpp
   
   service/userservice.cpp
+  service/authservice.cpp
 
   mapper/usermapper.cpp
   
   utility/passwordbuilder.cpp
+  utility/functional.cpp
 )
 
 set(HEADER
   application/application.h
   
   controller/usercontroller.h
-  
+  controller/authcontroller.h
+
   service/userservice.h
+  service/authservice.h
 
   repository/userrepository.h
   repository/config.h
 
   entity/user.h
   dto/userrequestdto.h
+  dto/authrequestdto.h
   dto/userresponsedto.h
+  dto/authresponsedto.h
 
   utility/alias.h
   utility/passwordbuilder.h
+  utility/functional.h
 
   mapper/usermapper.h
 )
@@ -49,5 +57,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   wfrest
   workflow
   jwt-cpp::jwt-cpp
-  Qt6::Sql
+  Qt5::Sql
 )

@@ -1,23 +1,24 @@
 #ifndef USERSERVICE_H
 #define USERSERVICE_H
 
-#include "../dto/userrequestdto.h"
-#include "../dto/userresponsedto.h"
-#include "../repository/userrepository.h"
-#include <QSharedPointer>
+#include "dto/userrequestdto.h"
+#include "dto/userresponsedto.h"
+#include "repository/userrepository.h"
 #include <optional>
+#include <QSharedPointer>
 
-namespace App {
-class UserService {
+namespace App
+{
+class UserService
+{
 public:
-  auto
-  create(const UserRequestDTO &dto) noexcept -> std::optional<UserResponseDTO>;
+    auto create(const UserRequestDTO &dto) noexcept -> std::optional<UserResponseDTO>;
 
 public:
-  UserService() noexcept;
+    UserService() noexcept;
 
 private:
-  QSharedPointer<UserRepository> m_userRepository;
+    QSharedPointer<UserRepository> m_userRepository;
 };
 } // namespace App
 

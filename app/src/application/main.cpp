@@ -2,9 +2,10 @@
 
 #include <QCoreApplication>
 
-int main(int argc, char *argv[]) {
-  auto app = std::make_unique<QCoreApplication>(argc, argv);
+int main(int argc, char *argv[])
+{
+    auto app = std::make_unique<QCoreApplication>(argc, argv);
 
-  App::Application srv(std::move(app));
-  return !srv.run();
+    App::Application srv(std::move(app));
+    return !srv.run();
 }

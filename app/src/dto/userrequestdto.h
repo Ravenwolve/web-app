@@ -3,10 +3,12 @@
 
 #include <QString>
 
-namespace App {
-struct UserRequestDTO {
-  QString m_login;
-  QString m_password;
+namespace App
+{
+struct UserRequestDTO
+{
+    QString m_login;
+    QString m_password;
 };
 } // namespace App
 

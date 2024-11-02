@@ -1,26 +1,30 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "../controller/usercontroller.h"
+#include "controller/authcontroller.h"
+#include "controller/usercontroller.h"
 #include <QCoreApplication>
 
-namespace App {
-class Application {
+namespace App
+{
+class Application
+{
 public:
-  int run();
+    int run();
 
 public:
-  Application(std::unique_ptr<QCoreApplication> application);
+    Application(std::unique_ptr<QCoreApplication> application);
 
 private:
-  Application(const Application &) = delete;
-  Application(Application &&) = delete;
-  Application &operator=(const Application &) = delete;
-  Application &&operator=(Application &&) = delete;
+    Application(const Application &)            = delete;
+    Application(Application &&)                 = delete;
+    Application &operator=(const Application &) = delete;
+    Application &&operator=(Application &&)     = delete;
 
 private:
-  QScopedPointer<UserController> m_userController;
-  QScopedPointer<QCoreApplication> m_application;
+    QScopedPointer<QCoreApplication> m_application;
+    QScopedPointer<UserController> m_userController;
+    QScopedPointer<AuthController> m_authController;
 };
 } // namespace App
 
