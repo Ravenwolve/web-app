@@ -12,7 +12,8 @@ namespace App
 class AuthController
 {
 public:
-    void auth(const HTTPRequest *request, HTTPResponse *response);
+    void signUp(const HTTPRequest *request, HTTPResponse *response);
+    void signIn(const HTTPRequest *request, HTTPResponse *response);
     void refresh(const HTTPRequest *request, HTTPResponse *response);
 
 public:

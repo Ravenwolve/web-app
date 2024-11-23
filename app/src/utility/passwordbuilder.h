@@ -10,7 +10,10 @@ class PasswordBuilder
 public:
     auto generateSalt() noexcept -> PasswordBuilder &;
     auto salt() noexcept -> PasswordBuilder &;
+    auto salt(const QString &salt) noexcept -> PasswordBuilder &;
     auto encrypt() noexcept -> PasswordBuilder &;
+    auto getPassword() noexcept -> QString;
+    auto getSalt() noexcept -> QString;
 
 public:
     PasswordBuilder(const QString &password) noexcept;

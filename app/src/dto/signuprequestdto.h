@@ -1,11 +1,11 @@
-#ifndef USERREQUESTDTO_H
-#define USERREQUESTDTO_H
+#ifndef SIGNUPREQUESTDTO_H
+#define SIGNUPREQUESTDTO_H
 
 #include <QString>
 
 namespace App
 {
-struct UserRequestDTO
+struct SignUpRequestDTO
 {
     QString m_login;
     QString m_password;

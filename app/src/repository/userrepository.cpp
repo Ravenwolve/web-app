@@ -9,7 +9,7 @@ namespace App
 UserRepository::UserRepository() noexcept
     : m_database(QSharedPointer<QSqlDatabase>::create(QSqlDatabase::addDatabase("QPSQL")))
 {
-    m_database->setHostName(Config::HOST);
+    m_database->setHostName(Config::POSTGRES_HOST);
     m_database->setDatabaseName(Config::POSTGRES_DB);
     m_database->setUserName(Config::POSTGRES_USER);
     m_database->setPassword(Config::POSTGRES_PASSWORD);
@@ -19,6 +19,7 @@ UserRepository::UserRepository() noexcept
 bool UserRepository::add(const User &user) noexcept
 {
     qDebug() << "UserRepository::add: " << *m_database;
+    qDebug() << m_database->connectionNames();
     if (!m_database->open())
     {
         qDebug() << m_database->lastError();

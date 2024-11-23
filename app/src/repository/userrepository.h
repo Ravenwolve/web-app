@@ -1,7 +1,6 @@
 #ifndef USERREPOSITORY_H
 #define USERREPOSITORY_H
 
-#include "dto/userrequestdto.h"
 #include "entity/user.h"
 #include <optional>
 #include <QSharedPointer>

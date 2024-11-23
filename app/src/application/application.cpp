@@ -7,7 +7,6 @@ namespace App
 {
 Application::Application(std::unique_ptr<QCoreApplication> application)
     : m_application(application.release())
-    , m_userController(nullptr)
     , m_authController(nullptr)
 {}
 
@@ -17,7 +16,6 @@ int Application::run()
 
     auto httpServer = QSharedPointer<HTTPServer>::create();
 
-    m_userController.reset(new UserController(httpServer));
     m_authController.reset(new AuthController(httpServer));
 
     if (httpServer->start(port) == 0)

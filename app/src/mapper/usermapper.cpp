@@ -2,9 +2,9 @@
 
 namespace App
 {
-UserResponseDTO UserMapper::toResponseDTO(const User &user)
+SignUpResponseDTO UserMapper::toResponseDTO(const User &user)
 {
-    UserResponseDTO dto;
+    SignUpResponseDTO dto;
 
     dto.m_id       = user.m_id;
     dto.m_login    = user.m_login;

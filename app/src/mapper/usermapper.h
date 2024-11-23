@@ -1,7 +1,7 @@
 #ifndef USERMAPPER_H
 #define USERMAPPER_H
 
-#include "dto/userresponsedto.h"
+#include "dto/signupresponsedto.h"
 #include "entity/user.h"
 
 namespace App
@@ -9,7 +9,7 @@ namespace App
 class UserMapper
 {
 public:
-    static auto toResponseDTO(const User &user) -> UserResponseDTO;
+    static auto toResponseDTO(const User &user) -> SignUpResponseDTO;
 };
 } // namespace App
 

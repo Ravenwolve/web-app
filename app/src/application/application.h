@@ -2,7 +2,6 @@
 #define APPLICATION_H
 
 #include "controller/authcontroller.h"
-#include "controller/usercontroller.h"
 #include <QCoreApplication>
 
 namespace App
@@ -23,7 +22,6 @@ private:
 
 private:
     QScopedPointer<QCoreApplication> m_application;
-    QScopedPointer<UserController> m_userController;
     QScopedPointer<AuthController> m_authController;
 };
 } // namespace App

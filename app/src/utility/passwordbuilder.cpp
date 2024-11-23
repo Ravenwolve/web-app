@@ -25,7 +25,12 @@ auto PasswordBuilder::generateSalt() noexcept -> PasswordBuilder &
 
 auto PasswordBuilder::salt() noexcept -> PasswordBuilder &
 {
-    m_password += m_salt;
+    return salt(m_salt);
+}
+
+auto PasswordBuilder::salt(const QString &salt) noexcept -> PasswordBuilder &
+{
+    m_password += salt;
 
     return *this;
 }
@@ -36,4 +41,15 @@ auto PasswordBuilder::encrypt() noexcept -> PasswordBuilder &
 
     return *this;
 }
+
+auto PasswordBuilder::getPassword() noexcept -> QString
+{
+    return m_password;
+}
+
+auto PasswordBuilder::getSalt() noexcept -> QString
+{
+    return m_salt;
+}
+
 } // namespace App

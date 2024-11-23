@@ -12,12 +12,10 @@ set(SRC
   
   application/application.cpp
   
-  controller/usercontroller.cpp
   controller/authcontroller.cpp
 
   repository/userrepository.cpp
   
-  service/userservice.cpp
   service/authservice.cpp
 
   mapper/usermapper.cpp
@@ -29,20 +27,20 @@ set(SRC
 set(HEADER
   application/application.h
   
-  controller/usercontroller.h
   controller/authcontroller.h
 
-  service/userservice.h
   service/authservice.h
 
   repository/userrepository.h
   repository/config.h
 
   entity/user.h
-  dto/userrequestdto.h
-  dto/authrequestdto.h
-  dto/userresponsedto.h
-  dto/authresponsedto.h
+  dto/signinrequestdto.h
+  dto/signuprequestdto.h
+  dto/refreshrequestdto.h
+  dto/signinresponsedto.h
+  dto/signupresponsedto.h
+  dto/refreshresponsedto.h
 
   utility/alias.h
   utility/passwordbuilder.h

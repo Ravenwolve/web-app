@@ -9,16 +9,19 @@ AuthController::AuthController(QSharedPointer<HTTPServer> server)
     : m_httpServer(server)
     , m_authService(new AuthService)
 {
-    m_httpServer->POST("/auth", bind(&AuthController::auth, this));
+    m_httpServer->POST("/sign-up", bind(&AuthController::signUp, this));
+    m_httpServer->POST("/auth", bind(&AuthController::signIn, this));
     m_httpServer->POST("/refresh", bind(&AuthController::refresh, this));
 }
 
-static void AddTokensToCookies(HTTPResponse *response, const AuthResponseDTO &dto)
+static void AddTokensToCookies(HTTPResponse *response, const std::tuple<QString, QString> &tokens)
 {
-    HTTPCookie accessTokenCookie("Access-Token", dto.m_accessToken.toStdString());
+    const auto &[accessToken, refreshToken] = tokens;
+
+    HTTPCookie accessTokenCookie("Access-Token", accessToken.toStdString());
     accessTokenCookie.set_http_only(true);
 
-    HTTPCookie refreshTokenCookie("Refresh-Token", dto.m_refreshToken.toStdString());
+    HTTPCookie refreshTokenCookie("Refresh-Token", refreshToken.toStdString());
     refreshTokenCookie.set_http_only(true);
     refreshTokenCookie.set_path("/refresh");
 
@@ -26,46 +29,66 @@ static void AddTokensToCookies(HTTPResponse *response, const AuthResponseDTO &dt
     response->add_cookie(refreshTokenCookie);
 }
 
-void AuthController::auth(const HTTPRequest *request, HTTPResponse *response)
+void AuthController::signUp(const HTTPRequest *request, HTTPResponse *response)
 {
-    auto dto = extract<UserRequestDTO>(request);
+    qDebug() << "AuthController: signUp handler entered";
+    const auto &dto = extract<SignUpRequestDTO>(request);
     if (!dto.has_value())
     {
         response->set_status(HttpStatusBadRequest);
         return;
     }
+    qDebug() << "AuthController: SignUpRequestDTO successfully extracted";
 
-    auto authDto = m_authService->login(dto.value());
-    if (!authDto.has_value())
+    if (!m_authService->create(dto.value()).has_value())
     {
-        qDebug() << "User " << authDto->m_login << " does not exists;";
+        qDebug() << "User " << dto->m_login << " did not create;";
+        response->set_status(HttpStatusBadRequest);
+    }
+
+    qDebug() << "User " << dto->m_login << " created successfully;";
+    response->set_status(HttpStatusCreated);
+}
+
+void AuthController::signIn(const HTTPRequest *request, HTTPResponse *response)
+{
+    const auto &requestDto = extract<SignInRequestDTO>(request);
+    if (!requestDto.has_value())
+    {
         response->set_status(HttpStatusBadRequest);
         return;
     }
 
-    auto tokens = m_authService->generateTokens(authDto.value());
-    AddTokensToCookies(response, tokens.value());
+    const auto &responseDto = m_authService->login(requestDto.value());
+    if (!responseDto.has_value())
+    {
+        qDebug() << "User " << responseDto->m_login << " does not exists;";
+        response->set_status(HttpStatusBadRequest);
+        return;
+    }
+
+    AddTokensToCookies(response, {responseDto.value().m_accessToken, responseDto.value().m_refreshToken});
 
     response->set_status(HttpStatusOK);
 }
 
 void AuthController::refresh(const HTTPRequest *request, HTTPResponse *response)
 {
-    const auto &cookies = request->cookies();
+    const auto &requestDto = extract<RefreshRequestDTO>(request);
+    if (requestDto.has_value())
+    {
+        response->set_status(HttpStatusBadRequest);
+        return;
+    }
 
-    if (!cookies.contains("Refresh-Token"))
+    const auto &responseDto = m_authService->refreshTokens(requestDto.value());
+    if (!responseDto.has_value())
     {
         response->set_status(HttpStatusForbidden);
         return;
     }
 
-    auto refreshedTokens = m_authService->refreshTokens(QString::fromStdString(cookies.at("Refresh-Token")));
-    if (!refreshedTokens.has_value())
-    {
-        response->set_status(HttpStatusForbidden);
-        return;
-    }
-    AddTokensToCookies(response, refreshedTokens.value());
+    AddTokensToCookies(response, {responseDto.value().m_accessToken, responseDto.value().m_refreshToken});
 
     response->set_status(HttpStatusOK);
 }

@@ -1,11 +1,14 @@
 #ifndef AUTHSERVICE_H
 #define AUTHSERVICE_H
 
-#include "dto/authrequestdto.h"
-#include "dto/authresponsedto.h"
-#include "dto/userrequestdto.h"
-#include "dto/userresponsedto.h"
+#include "dto/refreshrequestdto.h"
+#include "dto/refreshresponsedto.h"
+#include "dto/signinrequestdto.h"
+#include "dto/signinresponsedto.h"
+#include "dto/signuprequestdto.h"
+#include "dto/signupresponsedto.h"
 #include "repository/userrepository.h"
+#include <chrono>
 #include <optional>
 #include <QSharedPointer>
 
@@ -14,9 +17,15 @@ namespace App
 class AuthService
 {
 public:
-    auto generateTokens(const AuthRequestDTO &dto) noexcept -> std::optional<AuthResponseDTO>;
-    auto refreshTokens(const QString &token) noexcept -> std::optional<AuthResponseDTO>;
-    auto login(const UserRequestDTO &dto) noexcept -> std::optional<UserResponseDTO>;
+    auto create(const SignUpRequestDTO &dto) noexcept -> std::optional<SignUpResponseDTO>;
+    auto login(const SignInRequestDTO &dto) noexcept -> std::optional<SignInResponseDTO>;
+    auto refreshTokens(const RefreshRequestDTO &token) noexcept -> std::optional<RefreshResponseDTO>;
+
+private:
+    auto generateToken(const QString id,
+                       const std::chrono::system_clock::time_point &startsWith,
+                       size_t days,
+                       const QString &login) noexcept -> QString;
 
 public:
     AuthService() noexcept;

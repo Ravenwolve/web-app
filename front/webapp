@@ -5,21 +5,25 @@ show_usage() {
 		Usage: $1 <command> <login> <password>
 
 		Commands:
-			register      register the user using given login and password into database
-			auth          authentificate the user using given login and password into database
+			sign-up      register the user using given login and password into database
+			sign-in      authentificate the user using given login and password into database
 	EOF
 }
 
-register() {
+sign_up() {
 	local login=$1
 	local password=$2
-	curl -X POST http://localhost:8080/sign-up -H 'Content-Type: application/json' -d '{"usr":"$login","pwd":"$password"}'
+	local json_request='{"usr":"'$login'","pwd":"'$password'"}'
+	echo "HTTP: Request" $json_request
+	curl -X POST http://localhost:8080/sign-up -H 'Content-Type: application/json' -d $json_request
 }
 
-auth() {
+sign_in() {
 	local login=$1
 	local password=$2
-	curl -X POST http://localhost:8080/auth -H 'Content-Type: application/json' -d '{"usr":"$login","pwd":"$password"}'
+	local json_request='{"usr":"'$login'","pwd":"'$password'"}'
+	echo "HTTP: Request" $json_request
+	curl -X POST http://localhost:8080/auth -H 'Content-Type: application/json' -d $json_request
 }
 
 if [[ $# != 3 ]]; then
@@ -31,11 +35,11 @@ cmd=$1
 login=$2
 password=$3
 case $cmd in
-register)
-	register login password
+sign-in)
+	sign_in $login $password
 	;;
-auth)
-	auth login password
+sign-up)
+	sign_up $login $password
 	;;
 *)
 	show_usage $0
