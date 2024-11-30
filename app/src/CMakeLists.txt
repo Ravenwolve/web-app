@@ -1,5 +1,5 @@
 find_package(wfrest REQUIRED)
-find_package(Qt5 REQUIRED COMPONENTS Sql)
+find_package(Qt6 REQUIRED COMPONENTS Sql)
 find_package(jwt-cpp CONFIG REQUIRED)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -55,5 +55,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   wfrest
   workflow
   jwt-cpp::jwt-cpp
-  Qt5::Sql
+  Qt6::Sql
 )

@@ -1,106 +1,99 @@
 #include "userrepository.h"
 #include "config.h"
+#include <iostream>
 #include <QDebug>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QThread>
 
 namespace App
 {
+
 UserRepository::UserRepository() noexcept
-    : m_database(QSharedPointer<QSqlDatabase>::create(QSqlDatabase::addDatabase("QPSQL")))
+    : m_database(QSqlDatabase::addDatabase("QPSQL"))
 {
-    m_database->setHostName(Config::POSTGRES_HOST);
-    m_database->setDatabaseName(Config::POSTGRES_DB);
-    m_database->setUserName(Config::POSTGRES_USER);
-    m_database->setPassword(Config::POSTGRES_PASSWORD);
-    m_database->setPort(Config::POSTGRES_PORT);
+    m_database.setHostName(Config::POSTGRES_HOST);
+    m_database.setDatabaseName(Config::POSTGRES_DB);
+    m_database.setUserName(Config::POSTGRES_USER);
+    m_database.setPassword(Config::POSTGRES_PASSWORD);
+    m_database.setPort(Config::POSTGRES_PORT);
+    m_database.open();
+    qDebug() << m_database;
 }
 
 bool UserRepository::add(const User &user) noexcept
 {
-    qDebug() << "UserRepository::add: " << *m_database;
-    qDebug() << m_database->connectionNames();
-    if (!m_database->open())
+    if (!m_database.isOpen())
     {
-        qDebug() << m_database->lastError();
-        return false;
+        m_database.open();
     }
-
-    QSqlQuery query(*m_database);
-    query.prepare("INSERT INTO users (login, salt, password) "
-                  "VALUES (:login, :salt, :password)");
+    qDebug() << "UserRepository::add";
+    std::cerr << "Add" << std::endl;
+    // auto m_database = ConnectToDB();
+    QSqlQuery query(m_database);
+    std::cerr << "Initialized" << std::endl;
+    query.prepare("INSERT INTO users (login, salt, password) VALUES (:login, :salt, :password)");
+    std::cerr << "Prepared" << std::endl;
     query.bindValue(":login", user.m_login);
+    std::cerr << "Login bound" << std::endl;
     query.bindValue(":salt", user.m_salt);
+    std::cerr << "Login bound" << std::endl;
     query.bindValue(":password", user.m_password);
+    std::cerr << "Login bound" << std::endl;
 
-    bool isSuccess = query.exec();
-
-    m_database->close();
-    return isSuccess;
+    return query.exec();
 }
 
 std::optional<User> UserRepository::findById(quint64 id) noexcept
 {
-    if (!m_database->open())
+    if (!m_database.isOpen())
     {
-        qDebug() << m_database->lastError();
-        return std::nullopt;
+        m_database.open();
     }
-
-    QSqlQuery query(*m_database);
+    QSqlQuery query(m_database);
     query.prepare("SELECT * FROM users WHERE id = :id");
     query.bindValue(":id", id);
 
-    if (!query.exec())
+    if (!query.exec() || !query.next())
     {
-        m_database->close();
         return std::nullopt;
     }
 
-    if (query.next())
-    {
-        User user{query.value("id").toUInt(),
-                  query.value("login").toString(),
-                  query.value("password").toString(),
-                  query.value("salt").toString()};
-        m_database->close();
-        return user;
-    }
+    User user{query.value("id").toUInt(),
+              query.value("login").toString(),
+              query.value("password").toString(),
+              query.value("salt").toString()};
 
-    m_database->close();
-    return std::nullopt;
+    return user;
 }
 
 std::optional<User> UserRepository::findByLogin(const QString &login) noexcept
 {
-    qDebug() << "UserRepository::findByLogin: " << *m_database;
-    if (!m_database->open())
+    qDebug() << "UserRepository::findByLogin";
+    if (!m_database.isOpen())
     {
-        qDebug() << m_database->lastError();
-        return std::nullopt;
+        m_database.open();
     }
-
-    QSqlQuery query(*m_database);
+    qDebug() << "Connected!";
+    QSqlQuery query(m_database);
+    qDebug() << "Query initialized!";
     query.prepare("SELECT * FROM users WHERE login = :login");
+    qDebug() << "Query prepared!";
     query.bindValue(":login", login);
+    qDebug() << "Query bound!";
 
-    if (!query.exec())
+    if (!query.exec() || !query.next())
     {
-        m_database->close();
         return std::nullopt;
     }
 
-    if (query.next())
-    {
-        User user{query.value("id").toUInt(),
-                  query.value("login").toString(),
-                  query.value("password").toString(),
-                  query.value("salt").toString()};
-        m_database->close();
-        return user;
-    }
+    User user{query.value("id").toUInt(),
+              query.value("login").toString(),
+              query.value("password").toString(),
+              query.value("salt").toString()};
 
-    m_database->close();
-    return std::nullopt;
+    return user;
 }
 } // namespace App

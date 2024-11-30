@@ -19,7 +19,7 @@ public:
     UserRepository() noexcept;
 
 private:
-    QSharedPointer<QSqlDatabase> m_database;
+    QSqlDatabase m_database;
 };
 } // namespace App
 

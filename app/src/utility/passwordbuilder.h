@@ -14,6 +14,7 @@ public:
     auto encrypt() noexcept -> PasswordBuilder &;
     auto getPassword() noexcept -> QString;
     auto getSalt() noexcept -> QString;
+    auto getPair() noexcept -> std::pair<QString, QString>;
 
 public:
     PasswordBuilder(const QString &password) noexcept;

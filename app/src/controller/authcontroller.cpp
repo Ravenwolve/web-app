@@ -17,13 +17,12 @@ AuthController::AuthController(QSharedPointer<HTTPServer> server)
 static void AddTokensToCookies(HTTPResponse *response, const std::tuple<QString, QString> &tokens)
 {
     const auto &[accessToken, refreshToken] = tokens;
-
-    HTTPCookie accessTokenCookie("Access-Token", accessToken.toStdString());
-    accessTokenCookie.set_http_only(true);
-
     HTTPCookie refreshTokenCookie("Refresh-Token", refreshToken.toStdString());
     refreshTokenCookie.set_http_only(true);
     refreshTokenCookie.set_path("/refresh");
+
+    HTTPCookie accessTokenCookie("Access-Token", accessToken.toStdString());
+    accessTokenCookie.set_http_only(true);
 
     response->add_cookie(accessTokenCookie);
     response->add_cookie(refreshTokenCookie);
@@ -42,11 +41,12 @@ void AuthController::signUp(const HTTPRequest *request, HTTPResponse *response)
 
     if (!m_authService->create(dto.value()).has_value())
     {
-        qDebug() << "User " << dto->m_login << " did not create;";
+        qDebug() << "User " << dto->m_login << " did not create";
         response->set_status(HttpStatusBadRequest);
+        return;
     }
 
-    qDebug() << "User " << dto->m_login << " created successfully;";
+    qDebug() << "User " << dto->m_login << " created successfully";
     response->set_status(HttpStatusCreated);
 }
 
@@ -62,7 +62,7 @@ void AuthController::signIn(const HTTPRequest *request, HTTPResponse *response)
     const auto &responseDto = m_authService->login(requestDto.value());
     if (!responseDto.has_value())
     {
-        qDebug() << "User " << responseDto->m_login << " does not exists;";
+        qDebug() << "User " << responseDto->m_login << " does not exists";
         response->set_status(HttpStatusBadRequest);
         return;
     }
@@ -75,20 +75,26 @@ void AuthController::signIn(const HTTPRequest *request, HTTPResponse *response)
 void AuthController::refresh(const HTTPRequest *request, HTTPResponse *response)
 {
     const auto &requestDto = extract<RefreshRequestDTO>(request);
-    if (requestDto.has_value())
+    if (!requestDto.has_value())
     {
+        qDebug() << "Refresh request invalid";
         response->set_status(HttpStatusBadRequest);
         return;
     }
 
+    qDebug() << "Cookie is got: Refresh_Token " << requestDto->m_refreshToken;
+
     const auto &responseDto = m_authService->refreshTokens(requestDto.value());
     if (!responseDto.has_value())
     {
+        qDebug() << "ERROR: Refreshing tokens is fail";
         response->set_status(HttpStatusForbidden);
         return;
     }
 
     AddTokensToCookies(response, {responseDto.value().m_accessToken, responseDto.value().m_refreshToken});
+
+    qDebug() << "Tokens refreshed";
 
     response->set_status(HttpStatusOK);
 }

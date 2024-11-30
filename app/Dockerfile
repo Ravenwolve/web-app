@@ -1,7 +1,7 @@
 FROM ubuntu:latest AS build
 
 RUN apt-get update && \
-  apt-get install -y build-essential g++ qt6-base-dev zlib1g-dev libssl-dev libgtest-dev cmake git
+  apt-get install -y build-essential g++ qt6-base-dev zlib1g-dev libssl-dev libgtest-dev cmake git libpq-dev libqt6sql6-psql
 
 COPY . /app
 

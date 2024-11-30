@@ -52,4 +52,9 @@ auto PasswordBuilder::getSalt() noexcept -> QString
     return m_salt;
 }
 
+auto PasswordBuilder::getPair() noexcept -> std::pair<QString, QString>
+{
+    return {m_salt, m_password};
+}
+
 } // namespace App

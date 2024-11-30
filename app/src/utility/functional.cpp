@@ -46,6 +46,6 @@ auto extract(const HTTPRequest *request) -> std::optional<RefreshRequestDTO>
         return std::nullopt;
     }
 
-    return RefreshRequestDTO{QString::fromStdString(cookies.at("Refresh-Token"))};
+    return RefreshRequestDTO{QString::fromStdString(cookies.at("Refresh-Token")).split(";")[0]};
 }
 } // namespace App
